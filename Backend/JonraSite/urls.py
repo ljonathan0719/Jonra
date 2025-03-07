@@ -16,7 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from . import views
 
+
+'''
+Routes to website:
+/login - takes user to login page
+/signup - if user has no account, user creates one here
+/home - user's home page (could include user id for simplicity)
+/home/board/:id - page to examine one of the user's boards
+/logout - not necessarily a page but a route to logout the user from the session
+'''
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.login),
+    path('login/', views.login),
+    path('signup/', views.signup),
+    path('home/', views.home),
+    path('home/boards/<str:id>', views.board),
+    path('home/boards/', views.home),
+    path('logout/', views.logout),
 ]
