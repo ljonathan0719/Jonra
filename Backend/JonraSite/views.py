@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.template import loader
 
 def signup(request):
     return HttpResponse("Signup page")
 
 def home(request):
-    return HttpResponse("Home page")
+    template = loader.get_template("models/homepage.html")
+    return HttpResponse(template.render())
 
 def login(request):
     return HttpResponse("Login page")
