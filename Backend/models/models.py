@@ -1,5 +1,4 @@
 from django.db import models
-
 # Create your models here.
 
 '''
@@ -25,8 +24,8 @@ Board Model
 '''
 class Board(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
     editors = models.ManyToManyField(User)
+    name = models.CharField(max_length=255)
 
     def getId(self):
         return self.id
@@ -48,9 +47,9 @@ Task Model
 '''
 class Task(models.Model):
     id = models.AutoField(primary_key=True)
+    board = models.ForeignKey(Board, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=3000)
-    board = models.ForeignKey(Board, on_delete=models.CASCADE)
     priority = models.CharField(max_length=255, default="None")
     status = models.CharField(max_length=255, default="None")
 
