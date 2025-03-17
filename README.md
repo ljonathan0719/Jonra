@@ -10,7 +10,7 @@
 Run 'python manage.py runserver'
 
 **Testing the Database**
-In Backend folder, run: 'python manage.py shell' where a python shell should open
-To import objects, type: 'from models.models import *'
-To see all objects of a class (i.e. User), type 'User.objects.all()'
-Type 'quit()' to exit
+1) In Backend folder, run: 'python manage.py shell' where a python shell should open
+2) To import objects, type: 'from models.models import *'
+3) To see all objects of a class (i.e. User), type 'User.objects.all()'
+4) Type 'quit()' to exit
