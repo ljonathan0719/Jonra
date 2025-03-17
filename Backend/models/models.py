@@ -46,12 +46,28 @@ Task Model
     - Status: current progress of the task updated by the user
 '''
 class Task(models.Model):
+
+    priority_choices = {
+        "L" : "Low",
+        "M": "Medium",
+        "H": "High",
+        "U": "Urgent",
+    }
+
+    status_choices = {
+        "NS": "Not Started",
+        "IP": "In Progress",
+        "TD": "Completed",
+        "AN": "Assistance Needed",
+    }
+
     id = models.AutoField(primary_key=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=3000)
-    priority = models.CharField(max_length=255, default="None")
-    status = models.CharField(max_length=255, default="None")
+    board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    priority = models.CharField(max_length=1, choices=priority_choices, default="M")
+    status = models.CharField(max_length=2, choices = status_choices, default="NS")
 
     def getId(self):
         return self.id
