@@ -46,11 +46,11 @@ def signup(request):
 def home(request, name):
     print(name)
     user = User.objects.get(username=name)
-    boards = Board.objects.filter(editors=user)
-    return JsonResponse({
-        'message': 'Retrieved data',
-        'status': 'Success'
-        }, status=200)
+    boardset = Board.objects.filter(editors=user)
+    boards = [board.getName() for board in boardset]
+    data = {"Username": user.getUsername(),
+            "Available boards": boards}
+    return JsonResponse(data)
 
 def login(request):
     try:
