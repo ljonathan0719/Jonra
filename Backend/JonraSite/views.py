@@ -49,7 +49,7 @@ def home(request, name):
     boardset = Board.objects.filter(editors=user)
     boards = [board.getName() for board in boardset]
     data = {"Username": user.getUsername(),
-            "Available boards": json.dumps(boards)}
+            "Available boards": boards}
     return JsonResponse(data)
 
 def login(request):
