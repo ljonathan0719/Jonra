@@ -9,7 +9,11 @@
 **Running the server**
 Run 'python manage.py runserver'
 
-**Testing the Database**
+**Running tests**
+1) In Backend folder, run: 'python manage.py test __app/folder__'
+2) Results should display in console (0 errors returns: OK)
+
+**Testing the Database using Shell**
 1) In Backend folder, run: 'python manage.py shell' where a python shell should open
 2) To import objects, type: 'from models.models import *'
 3) To see all objects of a class (i.e. User), type 'User.objects.all()'
