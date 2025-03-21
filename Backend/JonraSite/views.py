@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.core.serializers import serialize, deserialize
 from models.models import *
 
 # NOTE: for information on Django http req-res attributes / methods
@@ -11,14 +12,15 @@ from models.models import *
 
 # TO-DO: Add auto testing script for req-res 
 
-def error(request):
+def error(request, msg="Something went wrong..."):
     res = {
-        'message': "Something went wrong...",
+        'message': msg,
         'status': "Error",
     }
     return JsonResponse(res, status=404)
 
 def signup(request):
+    print(request)
     try:
         type = request.method
         if type == "GET":
@@ -33,6 +35,13 @@ def signup(request):
                     'message': 'Missing one or more fields',
                     'status': 'Failed'
                 }, status=400)
+            
+            userExist = User.objects.filter(username=user).count()
+            if userExist > 0:
+                return JsonResponse({
+                    'message': 'User already exists',
+                    'status': 'Failed'
+                }, status=400)
 
             b = User(username=user, password=passwd)
             b.save()
@@ -40,16 +49,21 @@ def signup(request):
             return JsonResponse({
                 'status': 'Success'
             }, status=201)
-    except:
+    except Exception as e:
+        print(e)
         return error(request)
 
 def home(request, name):
     print(name)
     user = User.objects.get(username=name)
     boardset = Board.objects.filter(editors=user)
-    boards = [board.getName() for board in boardset]
-    data = {"Username": user.getUsername(),
-            "Available boards": boards}
+    # boards = [model_to_dict(board) for board in boardset]
+    boards = serialize('json', boardset)
+    data = {
+        "Username": user.getUsername(),
+            "Available boards": boards
+    }
+    # print(list(deserialize("json", boards)))
     return JsonResponse(data)
 
 def login(request):
@@ -78,8 +92,26 @@ def login(request):
             'status': 'Failure'
         }, status=400)
 
-def board(request, id):
-    return HttpResponse("Board page with id: " + id)
+def board(request, name):
+    try:
+        qryName = request.GET.get('board')
+        board = Board.objects.get(name=qryName)
+        editors = board.getEditors().all()
+        user = User.objects.get(username=name)
+        if user not in editors:
+            return JsonResponse({
+                    'message': 'User not editor of this board.',
+                    'status': 'Failed'
+            }, status=400)
+        
+        data = {
+            'Board': serialize('json', [board]),
+            'Users': serialize('json', [user]),
+        }
+        return JsonResponse(data, status=200)
+    except Exception as e:
+        print(e)
+        return error(request, "Board does not exist.")
 
 def logout(request):
     return HttpResponse("Logout page")

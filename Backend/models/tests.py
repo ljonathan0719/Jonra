@@ -9,6 +9,7 @@ class UserTestCase(TestCase):
         User.objects.create(username="Johnny", password="9u42hpnf92hbq@fho")
     
     def testUsername(self):
+        print("Testing username...")
         and1_user = User.objects.get(username="Andrei")
         and2_user = User.objects.get(username="Andrei clone")
         jon_user = User.objects.get(username="Johnny")
@@ -18,6 +19,7 @@ class UserTestCase(TestCase):
         self.assertEqual(jon_user.getUsername(), "Johnny")            
     
     def testPassword(self):
+        print("Testing password...")
         and1_user = User.objects.get(username="Andrei")
         and2_user = User.objects.get(username="Andrei clone")
         jon_user = User.objects.get(username="Johnny")
@@ -27,14 +29,15 @@ class UserTestCase(TestCase):
         self.assertEqual(jon_user.getPassword(), "9u42hpnf92hbq@fho")
 
 
-class TaskTestCase(UserTestCase):
-    def setUp(self):
-        super().setUp()
-        Task.objects.create(
-            name="Create frontend", 
-            description="Do it now", 
-            priority="High", 
-            status="Incomplete"
-            )
-        Task.objects.create(name="Do backend", description="None")
-        Task.objects.create(name="Make tests", description="Follow title", status="Done")
+# class TaskTestCase(UserTestCase):
+#     def setUp(self):
+#         super().setUp()
+#         Task.objects.create(
+#             name="Create frontend", 
+#             description="Do it now", 
+#             priority="High", 
+#             status="Incomplete"
+#             )
+#         Task.objects.create(name="Do backend", description="None")
+#         Task.objects.create(name="Make tests", description="Follow title", status="Done")
+        
