@@ -61,7 +61,7 @@ def home(request, name):
     boards = serialize('json', boardset)
     data = {
         "Username": user.getUsername(),
-            "Available boards": boards
+        "Available Boards": boards
     }
     # print(list(deserialize("json", boards)))
     return JsonResponse(data)
