@@ -2,11 +2,11 @@ import axios from 'axios';
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {BrowserRouter, Routes, Route} from "react-router-dom"
-import board from "/pages/board"
-import layout from "/pages/layout"
-import homepage from "/pages/homepage"
-import login from "/pages/login"
-import signup from "/pages/signup"
+import board from "./pages/board"
+import layout from "./pages/layout"
+import homepage from "./pages/homepage"
+import login from "./pages/login"
+import signup from "./pages/signup"
 
 function App() {
   return (
