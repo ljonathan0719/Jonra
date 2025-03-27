@@ -1,27 +1,48 @@
 import axios from 'axios';
 import React from "react";
-import ReactDOM from "react-dom/client";
-import {BrowserRouter, Routes, Route} from "react-router-dom"
-import board from "./pages/board"
-import layout from "./pages/layout"
-import homepage from "./pages/homepage"
-import login from "./pages/login"
-import signup from "./pages/signup"
+import {Routes, Route} from "react-router-dom"
+import Board from "./pages/Board"
+import Layout from "./pages/Layout"
+import Home from "./pages/Home"
+import Login from "./pages/Login"
+import Signup from "./pages/Signup"
 
-function App() {
+const App = () => {
   return (
-      <BrowserRouter>
-          <Routes>
-              <Route path="/" element = {<layout />}>
-                  <Route index element= {<homepage />} />
-                  <Route path = "board" element= {<board />} />
-                  <Route path = "login" element= {<login />} />
-                  <Route path = "signup" element= {<signup />} />
-              </Route>
-          </Routes>
-      </BrowserRouter>
+      <>
+        <Routes>
+          <Route path="/" element={<Layout/>}>
+            <Route index element={<Home/>}/>
+            <Route path="board" element={<Board/>}/>
+            <Route path="login" element={<Login/>}/>
+            <Route path="signup" element={<Signup/>}/>
+          </Route>
+        </Routes>
+      </>
   );
-}
+};
+
+
+// function App() {
+//   return (
+//     <div className="App">
+//       <header className="App-header">
+//         <img src={logo} className="App-logo" alt="logo" />
+//         <p>
+//           Welcome to the Jonra Homepage!
+//         </p>
+//         <a
+//           className="App-link"npm
+//           href="https://reactjs.org"
+//           target="_blank"
+//           rel="noopener noreferrer"
+//         >
+//           React Reference
+//         </a>
+//       </header>
+//     </div>
+//   );
+// }
 
 // class App extends React.Component {
 //
@@ -55,5 +76,4 @@ function App() {
 //   }
 // }
 
-const root = ReactDOM.createRoot(document.getElementById('root'))
 export default App;
