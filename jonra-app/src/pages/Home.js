@@ -7,7 +7,7 @@ const Home = () => {
 
     useEffect(() => {
         // Figure out how to fetch json response to list existing task boards
-        fetch("/api/task-boards")
+        fetch("http://localhost:8000/home/jonathan")
             .then((response) => response.json())
             .then((data) => setTaskBoards(data))
             .catch((error) => console.error("Error fetching task boards:", error));
