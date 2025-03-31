@@ -58,7 +58,8 @@ def home(request, name):
     user = User.objects.get(username=name)
     boardset = Board.objects.filter(editors=user)
     # boards = [model_to_dict(board) for board in boardset]
-    boards = serialize('json', boardset)
+    boards = [(board.getId(), board.getName()) for board in boardset]
+    # boards = serialize('json', boardset)
     data = {
         "Username": user.getUsername(),
         "Available Boards": boards
