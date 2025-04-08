@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React from "react";
 import {Routes, Route} from "react-router-dom"
 import Board from "./pages/Board"
@@ -12,10 +11,13 @@ const App = () => {
       <>
         <Routes>
           <Route path="/" element={<Layout/>}>
-            <Route index element={<Home/>}/>
-            <Route path="board" element={<Board/>}/>
+            <Route index element={<Login/>}/>
+            <Route path="home/:name/">
+              <Route index element={<Home />}/>
+              <Route path="board" element={<Board/>}/>
+            </Route>
             <Route path="login" element={<Login/>}/>
-            {/*<Route path="signup" element={<Signup/>}/>*/}
+            <Route path="signup" element={<Signup/>}/>
           </Route>
         </Routes>
       </>

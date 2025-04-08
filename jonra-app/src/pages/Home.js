@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import Board from "./Board";
 
+const { 
+    getBoards, 
+    createBoards,
+    editBoard,
+    deleteBoards  } = require("../api/boards");
 
 const Home = () => {
+    const { name } = useParams();
     const [taskBoards, setTaskBoards] = useState([]);
     const [showMenu, setShowMenu] = useState(false);
 
     useEffect(() => {
-        // Figure out how to fetch json response to list existing task boards
-        fetch("http://localhost:8000/home/jonathan")
-            .then((response) => response.json())
-            .then((data) => setTaskBoards(data))
-            .catch((error) => console.error("Error fetching task boards:", error));
-    }, []);
+        const handleGetBoards = async (username) => {
+            const res = await getBoards(username);
+            const boards = JSON.parse(res.data.boards);
+            setTaskBoards(boards);
+        }
 
+        handleGetBoards(name);
+    }, [name]);
 
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100vh", padding: "20px" }}>
@@ -40,15 +49,9 @@ const Home = () => {
                 {/* Existing Task Boards */}
                 <div style={{ width: "40%", border: "1px solid #ddd", padding: "20px", borderRadius: "10px" }}>
                     <h2>Existing Task Boards</h2>
-                    {taskBoards.length > 0 ? (
-                        <ul>
-                            {taskBoards.map((board) => (
-                                <li key={board.id}>{board.name}</li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>No task boards available.</p>
-                    )}
+                        {taskBoards ? taskBoards.map((board) => (
+                            <p>{board.fields.name}</p>
+                        )) : <p>No boards</p>}
                 </div>
 
                 {/* Create Task Board Section */}
