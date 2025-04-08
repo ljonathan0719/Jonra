@@ -1,6 +1,7 @@
 import json
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.forms.models import model_to_dict
 from django.core.serializers import serialize, deserialize
 from models.models import *
 
@@ -54,18 +55,36 @@ def signup(request):
         return error(request)
 
 def home(request, name):
-    print(name)
-    user = User.objects.get(username=name)
-    boardset = Board.objects.filter(editors=user)
-    # boards = [model_to_dict(board) for board in boardset]
-    boards = [(board.getId(), board.getName()) for board in boardset]
-    # boards = serialize('json', boardset)
-    data = {
-        "Username": user.getUsername(),
-        "Available Boards": boards
-    }
-    # print(list(deserialize("json", boards)))
-    return JsonResponse(data)
+    try:
+        if request.method == "GET":
+            user = User.objects.get(username=name)
+            boardset = Board.objects.filter(editors=user)
+            boards = [model_to_dict(board) for board in boardset]
+            # boards = [(board.getId(), board.getName()) for board in boardset]
+            boards = serialize('json', boardset)
+            data = {
+                "username": user.getUsername(),
+                "boards": boards
+            }
+            # print(list(deserialize("json", boards)))
+            return JsonResponse(data)
+        elif request.method == "POST":
+            user = User.objects.get(username=name)
+            boardset = Board.objects.filter(editors=user)
+            boards = [model_to_dict(board) for board in boardset]
+
+            # boards = [(board.getId(), board.getName()) for board in boardset]
+            # boards = serialize('json', boardset)
+            data = {
+                "username": user.getUsername(),
+                "boards": serialize('json', boards),
+                "tasks": boards[0].getTasks()
+            }
+            # print(list(deserialize("json", boards)))
+            return JsonResponse(data)
+    except Exception as e:
+        print(e)
+        return error(request)
 
 def login(request):
     try:

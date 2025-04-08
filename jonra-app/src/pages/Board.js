@@ -1,5 +1,6 @@
-const Board = () => {
-    return <h1>Board</h1>;
+const Board = props => {
+    const { name } = props;
+    return <p>{name}</p>;
 };
 
 export default Board;
