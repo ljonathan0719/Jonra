@@ -8,6 +8,8 @@ User Model
 class User(models.Model):
     username = models.CharField(primary_key=True, max_length=255)
     password = models.CharField(max_length=255)
+    loggedIn = models.BooleanField(default=False)
+    cookie = models.CharField(max_length=32, default="")
 
     def getUsername(self):
         return self.username
@@ -17,6 +19,12 @@ class User(models.Model):
     
     def getBoards(self):
         return self.boards.all()
+    
+    def getIsLoggedIn(self):
+        return self.loggedIn
+
+    def getCookie(self):
+        return self.cookie
 
 '''
 Board Model
