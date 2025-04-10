@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    # 'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -106,6 +107,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+# Source: https://docs.djangoproject.com/en/5.1/topics/auth/passwords/
+PASSWORD_HASHER = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
 ]
 
 

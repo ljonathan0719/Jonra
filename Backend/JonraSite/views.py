@@ -4,8 +4,10 @@ from django.http import HttpResponse, JsonResponse
 from django.forms.models import model_to_dict
 from django.core.serializers import serialize
 from django.contrib import auth
+from django.contrib.auth.hashers import make_password
 from django.conf import settings
 from models.models import *
+import random
 
 # NOTE: for information on Django http req-res attributes / methods
 # https://docs.djangoproject.com/en/5.1/ref/request-response/
@@ -13,7 +15,10 @@ from models.models import *
 # NOTE: Django's CSRF cookie security has been disabled for development.
 # Please look at: https://www.geeksforgeeks.org/csrf-token-in-django/
 
-# TO-DO: Add auto testing script for req-res 
+def createCookie(username, password):
+    hashedPass = make_password(password)
+    hasedUser = make_password(username)
+    return str(hasedUser) + str(random.randint(100000,999999999)) + hashedPass + str(random.randint(10000,999999999))
 
 def error(request, msg="Something went wrong..."):
     res = {
@@ -46,7 +51,10 @@ def signup(request):
                     'status': 'Failed'
                 }, status=400)
             
-            b = User(username=user, password=passwd, loggedIn=True, cookie="Testing")
+            
+            b = User(username=user, password=passwd, loggedIn=True)
+            newCookie = createCookie(user, passwd)
+            b.cookie = newCookie
             b.save()
 
             res = JsonResponse({
@@ -55,7 +63,7 @@ def signup(request):
             }, status=201)
             res.set_cookie(
                 key="SessionCookie", 
-                value=user.cookie, 
+                value=b.cookie,
                 max_age=28800, # Session is 8 hrs long
                 secure=True,
                 httponly=True
@@ -127,7 +135,7 @@ def login(request):
                 }, status=400)
             
             user.loggedIn = True
-            user.cookie = "Testing"
+            user.cookie = createCookie(user.getUsername(), user.getPassword())
             user.save()
             res = JsonResponse({
                 'message': 'Logged In',
