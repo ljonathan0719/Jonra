@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-93gxmo#u)k&oae#kq_(frftv9st-y6^r$#yfoi6=ou)r4&0ivr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1"
+]
 
 
 # Application definition
@@ -33,6 +35,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    # 'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -43,11 +46,13 @@ INSTALLED_APPS = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+# CSRF: Cross Site Request Forgery, need cookie for POST requests
+# Can disable in route testing
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -102,6 +107,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+# Source: https://docs.djangoproject.com/en/5.1/topics/auth/passwords/
+PASSWORD_HASHER = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
 ]
 
 
