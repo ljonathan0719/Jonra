@@ -4,6 +4,8 @@ from django.http import HttpResponse, JsonResponse
 from django.forms.models import model_to_dict
 from django.core.serializers import serialize, deserialize
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import make_password
+import random
 from models.models import *
 
 # NOTE: for information on Django http req-res attributes / methods
@@ -13,6 +15,11 @@ from models.models import *
 # Please look at: https://www.geeksforgeeks.org/csrf-token-in-django/
 
 # TO-DO: Add auto testing script for req-res 
+
+def createCookie(username, password):
+     hashedPass = make_password(password)
+     hasedUser = make_password(username)
+     return str(hasedUser) + str(random.randint(100000,999999999)) + hashedPass + str(random.randint(10000,999999999))
 
 def error(request, msg="Something went wrong..."):
     res = {
@@ -28,6 +35,7 @@ def signup(request):
         if type == "GET":
             return JsonResponse({ 'message': 'Success' }, status=200)
         elif type == "POST":
+            print(request.body)
             data = json.loads(request.body)
             user = data.get("user")
             passwd = data.get("password")
@@ -45,12 +53,23 @@ def signup(request):
                     'status': 'Failed'
                 }, status=400)
 
-            b = User(username=user, password=passwd)
-            b.save()
+            userObj = User.objects.create(username=user, password=passwd, loggedIn=True)
+            userObj.cookie = createCookie(user, passwd)
+            userObj.save()
 
-            return JsonResponse({
+            res = JsonResponse({
+                'message': 'User created',
                 'status': 'Success'
             }, status=201)
+            res.set_cookie(
+                key="SessionCookie",
+                value=userObj.getCookie(),
+                max_age=28800,   # session is 8 hrs long until expiration
+                secure=True,
+                httponly=True
+            )
+
+            return res
     except Exception as e:
         print(e)
         return error(request)
@@ -103,10 +122,24 @@ def login(request):
                     'status': 'Failed'
                 }, status=400)
 
-            if User.objects.get(username=user, password=passwd) != User.DoesNotExist:
-                return JsonResponse({
-                    'status': 'Success'
-                }, status=200)
+            userObj = User.objects.get(username=user, password=passwd)
+            userObj.loggedIn = True
+            userObj.cookie = createCookie(user, passwd)
+            userObj.save()
+
+            res = JsonResponse({
+                'message': 'User logged in',
+                'status': 'Success'
+            }, status=201)
+            res.set_cookie(
+                key="SessionCookie",
+                value=userObj.getCookie(),
+                max_age=28800,   # session is 8 hrs long until expiration
+                secure=True,
+                httponly=True
+            )
+
+            return res
     except:
         return JsonResponse({
             'message': 'User does not exist!',

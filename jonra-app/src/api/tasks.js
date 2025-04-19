@@ -3,7 +3,7 @@ import axios from 'axios'
 export const getTasks = async (username, boardId) => {
     const res = await axios.get(`http://127.0.0.1:8000/home/${username}/board/${boardId}`);
     const tasks = JSON.parse(res.data.tasks);
-    return tasks;
+    return tasks.reverse();
 }
 
 export const removeTask = async (username, boardId, taskname) => {
