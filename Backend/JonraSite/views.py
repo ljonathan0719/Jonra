@@ -5,6 +5,7 @@ from django.forms.models import model_to_dict
 from django.core.serializers import serialize, deserialize
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
+from django.conf import settings
 import random
 from models.models import *
 
@@ -76,9 +77,15 @@ def signup(request):
 
 def home(request, name):
     try:
+        user = User.objects.get(username=name)
+        boardset = Board.objects.filter(editors=user)
+        cookie = "" if settings.DEBUG else request.COOKIE["SessionCookie"]
+        if cookie != user.getCookie() and not settings.DEBUG:
+            return JsonResponse({
+                'message': "Invalid cookie!",
+                'status': "Failed"
+            }, status=401)
         if request.method == "GET":
-            user = User.objects.get(username=name)
-            boardset = Board.objects.filter(editors=user)
             boards = [model_to_dict(board) for board in boardset]
             # boards = [(board.getId(), board.getName()) for board in boardset]
             boards = serialize('json', boardset)
@@ -89,8 +96,6 @@ def home(request, name):
             # print(list(deserialize("json", boards)))
             return JsonResponse(data)
         elif request.method == "POST":
-            user = User.objects.get(username=name)
-            boardset = Board.objects.filter(editors=user)
             boards = [model_to_dict(board) for board in boardset]
 
             # boards = [(board.getId(), board.getName()) for board in boardset]
@@ -152,6 +157,13 @@ def board(request, name):
         board = Board.objects.get(name=qryName)
         editors = board.getEditors().all()
         user = User.objects.get(username=name)
+
+        cookie = "" if settings.DEBUG else request.COOKIE["SessionCookie"]
+        if cookie != user.getCookie() and not settings.DEBUG:
+            return JsonResponse({
+                'message': "Invalid cookie!",
+                'status': "Failed"
+            }, status=401)
         if user not in editors:
             return JsonResponse({
                     'message': 'User not editor of this board.',
@@ -172,8 +184,15 @@ def logout(request):
 
 def boardCreate(request, name, boardname):
     try:
+        user = User.objects.get(username=name)
+        
+        cookie = "" if settings.DEBUG else request.COOKIE["SessionCookie"]
+        if cookie != user.getCookie() and not settings.DEBUG:
+            return JsonResponse({
+                'message': "Invalid cookie!",
+                'status': "Failed"
+            }, status=401)
         if request.method == "POST":
-            user = User.objects.get(username=name)
             newBoard = Board()
             newBoard.name = boardname
             newBoard.save()
@@ -191,6 +210,13 @@ def tasks(request, name, id):
     try:
         user = User.objects.get(username=name)
         board = user.getBoards().get(id=id)
+
+        cookie = "" if settings.DEBUG else request.COOKIE["SessionCookie"]
+        if cookie != user.getCookie() and not settings.DEBUG:
+            return JsonResponse({
+                'message': "Invalid cookie!",
+                'status': "Failed"
+            }, status=401)
         if request.method == "GET":
             qryTasks = board.getTasks()
             tasks = [task for task in qryTasks]
