@@ -1,11 +1,11 @@
 import React from "react";
 import {Routes, Route} from "react-router-dom"
 import Board from "./pages/Board"
-// import Layout from "./pages/Layout"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import ErrorPage from "./pages/Error"
+import EditTask from "./pages/EditTask";
 import PageNotFound from "./pages/PageNotFound"
 import Logout from "./pages/Logout"
 
@@ -19,7 +19,9 @@ const App = () => {
           <Route path="signup" element={<Signup/>}/>
           <Route path="home/:name/">
             <Route index element={<Home />}/>
-            <Route path="board/:id" element={<Board />}/>
+            <Route path="board/:id" element={<Board />}>
+              <Route path="edit/" element={<Board />} />
+            </Route>
             <Route path="*" element={<PageNotFound />} />
           </Route>
           <Route path="logout/:name" element={<Logout />} />

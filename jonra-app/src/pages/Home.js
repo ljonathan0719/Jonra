@@ -49,12 +49,12 @@ const Home = () => {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h1>Welcome to Jonra</h1>
                 <div style={{ position: "relative" }}>
-                    <img
+                    {/* <img
                         src="/path-to-profile-pic.jpg"
                         alt="Profile"
                         style={{ width: 40, height: 40, borderRadius: "50%", cursor: "pointer" }}
                         onClick={() => setShowMenu(!showMenu)}
-                    />
+                    /> */}
                     {showMenu && (
                         <div style={{ position: "absolute", right: 0, background: "white", border: "1px solid #ddd", borderRadius: 5, padding: 10 }}>
                             <p style={{ margin: "5px 0", cursor: "pointer" }}>Info</p>

@@ -1,52 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { useFetcher, useParams } from "react-router-dom";
-import { editTask, getTaskFromId } from "../api/tasks";
+import { editTask, getTaskFromName, getTaskFromId } from "../api/tasks";
 import "./task-style.css";
 import "./login-page-style.css"
 
 // props are: name, description, priority, status
 
-export const Task = props => {
-    const { name } = useParams();
-    const { boardId, taskId, taskName, description, priority, status, handleGetTasks } = props;
+export const EditTask = props => {
+    const { name, boardId, taskId } = useParams();
+    const { taskName, description, priority, status } = props;
     const [ editName, setEditName ] = useState(taskName);
     const [ editDesc, setEditDesc ] = useState(description);
     const [ editPriority, setEditPriority ] = useState(priority);
     const [ editStatus, setEditStatus ] = useState(status);
-    const [ edit, setEdit ] = useState(false);
-    const [ attributes, setAttributes ] = useState([taskName, description, priority, status]);
-
-    const getTaskInfo = async () => {
-        const res = await getTaskFromId(name, boardId, taskId);
-        setAttributes([res.fields.name, res.fields.description, res.fields.priority, res.fields.status]);
-    }
 
     const handleEdit = async () => {
-        const res = await editTask(name, boardId, taskId, editName, editDesc, editPriority, editStatus);
-        setEdit(false);
-        getTaskInfo();
+        // const res = await editTask(name, boardId, taskId, editName, editDesc, editPriority, editStatus);
+        window.location.replace(`http://localhost:5000/home/${name}/board/${boardId}`);
     }
 
-    useEffect(() => {
-        handleGetTasks();
-    }, [attributes])
+    // const getTaskInfo = async () => {
+    //     const res = await getTaskFromId(name, boardId, taskId);
+    //     setAttributes([res.fields.name, res.fields.description, res.fields.priority, res.fields.status]);
+    // }
+
+    // useEffect(() => {
+    //     getTaskInfo();
+    // }, [])
 
     return (
         <div className="taskContainer">
-            {!edit &&
-                <div>
-                    <h2 className="taskTitle">{taskName}</h2>
-                    <hr />
-                    <p>Description: {description}</p>
-                    <p>Priority: {priority}</p>
-                    <p>Status: {status}</p>
-                    <button id="edit" className="login-button" onClick={() => setEdit(true)}>Edit</button>
-                    {props.children}
-                </div>
-            }
-            {edit && 
-                <div>
-                    <h2 className="taskTitle">
+                <h2 className="taskTitle">
                     <input 
                         id="taskHeaderTitle"
                         className="login-input"
@@ -90,9 +74,8 @@ export const Task = props => {
                         onChange={() => setEditStatus(document.getElementById("taskPstatus").value)}
                     />
                 </p>
-                <button id="save" className="login-button" onClick={handleEdit}>Save</button>
-                </div>
-            }
-        </div>
+                <button id="save-edit" className="login-button" onClick={handleEdit}>Save</button>
+                {/* {props.children} */}
+            </div>
     );
 }

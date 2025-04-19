@@ -188,11 +188,9 @@ def boardCreate(request, name, boardname):
         return error(request, "Board was not created.")    
 
 def tasks(request, name, id):
-    print(request)
     try:
         user = User.objects.get(username=name)
         board = user.getBoards().get(id=id)
-        print(board)
         if request.method == "GET":
             qryTasks = board.getTasks()
             tasks = [task for task in qryTasks]
@@ -229,6 +227,25 @@ def tasks(request, name, id):
 
             return JsonResponse({
                 'message': 'Task removed',
+                'status': 'Success'
+            }, status=200)
+        elif request.method == "PATCH":
+            taskId = json.loads(request.body).get("taskId")
+            taskName = request.GET.get("taskName") if 'taskName' in request.GET else ""
+            taskDesc = request.GET.get("taskDesc") if 'taskDesc' in request.GET else ""
+            taskPriority = request.GET.get("taskPriority") if 'taskPriority' in request.GET else ""
+            taskStatus = request.GET.get("taskStatus") if 'taskStatus' in request.GET else ""
+            print(taskName)
+            
+            task = Task.objects.get(id=taskId)
+            if taskName: task.name = taskName
+            if taskDesc: task.description = taskDesc
+            if taskPriority: task.priority = taskPriority
+            if taskStatus: task.status = taskStatus
+            task.save()
+
+            return JsonResponse({
+                'message': 'Task edited',
                 'status': 'Success'
             }, status=200)
         else:
