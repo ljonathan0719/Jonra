@@ -1,9 +1,6 @@
 import axios, { HttpStatusCode } from 'axios'
 import root_url from './info';
 
-// Primary Backend url to communicate with
-// const root_url = "http://127.0.0.1:8000/";
-
 // Get home page url from given parameters
 const getRootUrl = (username, boardId) => { return root_url + `home/${username}/board/${boardId}`; }
 
