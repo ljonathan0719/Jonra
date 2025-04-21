@@ -10,6 +10,7 @@ const PageNotFound = () => {
             {name &&
                 <Link to={`/home/${name}`} className="btn btn-secondary">Return to home</Link>
             }
+            <br />
             <Link to="/" className="btn btn-primary">Return to login</Link>
         </div>
     );

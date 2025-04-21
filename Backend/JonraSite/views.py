@@ -15,11 +15,13 @@ from models.models import *
 # NOTE: Django's CSRF cookie security has been disabled for development.
 # Please look at: https://www.geeksforgeeks.org/csrf-token-in-django/
 
+# Creates cookie from user and password
 def createCookie(username, password):
      hashedPass = make_password(password)
      hasedUser = make_password(username)
      return str(hasedUser) + str(random.randint(100000,999999999)) + hashedPass + str(random.randint(10000,999999999))
 
+# Generic error response
 def error(request, msg="Something went wrong..."):
     res = {
         'message': msg,
@@ -27,6 +29,7 @@ def error(request, msg="Something went wrong..."):
     }
     return JsonResponse(res, status=404)
 
+# Signup route
 def signup(request):
     if request.method != "POST":
         return JsonResponse({"message": "Method not allowed"}, status=405)
@@ -60,6 +63,7 @@ def signup(request):
     except Exception as e:
         return JsonResponse({"message": "Invalid request"}, status=400)
 
+# Home page route
 def home(request, name):
     try:
         user = User.objects.get(username=name)
@@ -93,6 +97,7 @@ def home(request, name):
         print(e)
         return error(request)
 
+# Login route
 def login(request):
     if request.method != "POST":
         return JsonResponse({"message": "Method not allowed"}, status=405)
@@ -129,6 +134,7 @@ def login(request):
     except Exception as e:
         return JsonResponse({"message": "Invalid request"}, status=400)
 
+# Board page route to get boards
 def board(request, name):
     try:
         qryName = request.GET.get('board')
@@ -157,6 +163,7 @@ def board(request, name):
         print(e)
         return error(request, "Board does not exist.")
 
+# Logout route
 def logout(request, name):  # <-- accept `name`
     try:
         user = User.objects.get(username=name)
@@ -173,7 +180,8 @@ def logout(request, name):  # <-- accept `name`
         return JsonResponse({"message": f"User {name} logged out successfully"}, status=200)
     except Exception as e:
         return JsonResponse({"message": "Invalid cookie"}, status=401)
-    
+
+# Route to create boards
 def boardCreate(request, name, boardname):
     try:
         user = User.objects.get(username=name)
@@ -198,6 +206,7 @@ def boardCreate(request, name, boardname):
         print(e)
         return error(request, "Board was not created.")
 
+# Route to delete a board with username and board's ID
 def boardDelete(request, name, id):
     try:
         if request.method == "DELETE":
@@ -211,7 +220,8 @@ def boardDelete(request, name, id):
     except Exception as e:
         print(e)
         return error(request, "An issue has occurred.")
-    
+
+# Route to handle tasks GET, DELETE, POST, PATCH  
 def tasks(request, name, id):
     try:
         user = User.objects.get(username=name)

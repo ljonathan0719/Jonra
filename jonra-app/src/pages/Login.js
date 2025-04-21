@@ -3,16 +3,19 @@ import React, { useState } from "react";
 import { authLogin, authSignup } from "../api/auth";
 import "./login-page-style.css";
 
+// Page to display login and signup information and authorizing user credentials
 export default function LoginPage() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [activeTab, setActiveTab] = useState("login");
   const [message, setMessage] = useState("");
 
+  // Update user input on input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Login with user form data to attempt to login the user when verified
   const handleLogin = async () => {
     try {
       const res = await authLogin(formData);
@@ -25,6 +28,7 @@ export default function LoginPage() {
     }
   };
 
+  // Signup the user with form data
   const handleSignup = async () => {
     try {
       const res = await authSignup(formData);
