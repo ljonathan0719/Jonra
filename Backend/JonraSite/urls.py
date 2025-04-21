@@ -23,8 +23,8 @@ from . import views
 Routes to website:
 /login - takes user to login page
 /signup - if user has no account, user creates one here
-/home - user's home page (could include user id for simplicity)
-/home/board/:id - page to examine one of the user's boards
+/home/<str:name> - user's home page (could include user id for simplicity)
+/home/<str:name>board/:id - page to examine one of the user's boards
 /logout - not necessarily a page but a route to logout the user from the session
 '''
 urlpatterns = [
@@ -32,8 +32,10 @@ urlpatterns = [
     path('', views.login),
     path('login/', views.login),
     path('signup/', views.signup),
-    path('home/<str:name>/board', views.board),
     path('home/<str:name>', views.home),
+    path('home/<str:name>/board/<int:id>', views.tasks),
+    path('home/<str:name>/board/<int:id>/edit', views.tasks),
+    path('home/<str:name>/createboard/<str:boardname>', views.boardCreate),
+    path('home/<str:name>/deleteboard/<int:id>', views.boardDelete),
     path('logout/<str:name>', views.logout),
-    # path('error/', views.error): must have 404.html to handle 
 ]

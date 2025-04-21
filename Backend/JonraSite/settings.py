@@ -45,6 +45,11 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5000"
+]
 
 # CSRF: Cross Site Request Forgery, need cookie for POST requests
 # Can disable in route testing
