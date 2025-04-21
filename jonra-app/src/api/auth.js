@@ -1,15 +1,14 @@
 import axios from "axios";
 
+const root_url = "http://127.0.0.1:8000/"
+
 export const authLogout = async (username) => {
-    // console.log(process.env.BACKEND_URI);
-    const res = await axios.get(`http://127.0.0.1:8000/logout/${username}`);
+    const res = await axios.get(root_url + `logout/${username}`);
     return res;
 }
 
 export const authLogin = async (user) => {
-    // console.log(process.env.BACKEND_URI);
-
-    const res = await axios.post(`http://127.0.0.1:8000/login/`, {
+    const res = await axios.post(root_url + `login/`, {
         user: user.username,
         password: user.password,
     });
@@ -17,8 +16,7 @@ export const authLogin = async (user) => {
 }
 
 export const authSignup = async (user) => {
-    // console.log(process.env.BACKEND_URI);
-    const res = await axios.post(`http://127.0.0.1:8000/signup/`, {
+    const res = await axios.post(root_url + `signup/`, {
         user: user.username,
         password: user.password,
     });
