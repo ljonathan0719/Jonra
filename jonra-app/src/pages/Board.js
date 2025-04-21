@@ -12,7 +12,7 @@ const Board = () => {
 
     const { name, id } = useParams();
     const [tasks, setTasks] = useState([]);
-    const [taskParams, setTaskParams] = useState(["", "None", "M", "NS"]);
+    const [taskParams, setTaskParams] = useState(["Task", "None", "M", "NS"]);
     const [errorMsg, setErrorMsg] = useState("");
 
     const handleGetTasks = async () => {
@@ -22,7 +22,7 @@ const Board = () => {
             setErrorMsg("");
         } catch (err) {
             console.error(err);
-            setErrorMsg("Error: Not a unique task name!");
+            setErrorMsg("Error: Failed to acquire tasks.");
         }
     }
 
@@ -37,14 +37,14 @@ const Board = () => {
         }
     }
 
-    const handleRemove = async (taskName) => {
+    const handleRemove = async (taskId) => {
         try {
-            await removeTask(name, id, taskName)
+            await removeTask(name, id, taskId)
             handleGetTasks();
             setErrorMsg("");
         } catch (err) {
             console.error(err);
-            setErrorMsg(`Error: could not remove task: ${taskName}`);
+            setErrorMsg(`Error: could not remove task: ${taskId}`);
         }
     }
 
@@ -74,7 +74,9 @@ const Board = () => {
                     {errorMsg && 
                         <p style={{color: 'red'}}>{errorMsg}</p>
                     }
+                <Link to={`/home/${name}`}><p style={{textAlign: "center"}}>Home</p></Link>
                 </div>
+                
                 <div>
                     {tasks.length? tasks.map((task) => (
                         <Task
@@ -87,14 +89,12 @@ const Board = () => {
                             handleGetTasks={handleGetTasks}
                         >
                             <div className="taskButtonContainer">
-                                <button className="task-button" onClick={() => handleRemove(task.fields.name)}>Remove task</button>
+                                <button className="task-button" onClick={() => handleRemove(task.pk)}>Remove task</button>
                             </div>
                         </Task>
                     )): <p style={{textAlign: "center"}}></p>}
                 </div>
             </div>
-            <Link to={`/home/${name}`}><p style={{textAlign: "center"}}>Home</p></Link>
-
         </div>
     );
 };

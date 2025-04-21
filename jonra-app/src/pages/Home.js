@@ -2,30 +2,24 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { authLogout } from "../api/auth";
-
-
-const { 
-    getBoards, 
-    createBoards,
-    editBoard,
-    deleteBoards  } = require("../api/boards");
-
-const { userLogout } = require("../api/users")
+import { getBoards, createBoards, deleteBoards } from "../api/boards";
+import "./form.css"
 
 const Home = () => {
     const { name } = useParams();
     const [taskBoards, setTaskBoards] = useState([]);
     const [showMenu, setShowMenu] = useState(false);
+    const [errText, setErrText] = useState("")
 
-    useEffect(() => {
-        const handleGetBoards = async (username) => {
-            const res = await getBoards(username);
-            const boards = JSON.parse(res.data.boards);
-            setTaskBoards(boards);
-        }
+    const handleGetBoards = async () => {
+        const res = await getBoards(name);
+        const boards = JSON.parse(res.data.boards);
+        setTaskBoards(boards);
+    }
 
-        handleGetBoards(name);
-    }, [name]);
+    // useEffect(() => {
+    //     handleGetBoards(name);
+    // }, [name]);
 
     const handleCreateBoard = async () => {
         const boardname = prompt("What is this board's name?");
@@ -35,12 +29,32 @@ const Home = () => {
         window.location.replace("http://localhost:5000/home/" + name + "/board/" + board[0].pk)
     }
 
+    const handleDeleteBoard = async (boardId) => {
+        try {
+            const res = await deleteBoards(name, boardId);
+            handleGetBoards();
+        } catch (err) {
+            console.log(err);
+            setErrText("Error: Could not delete board!");
+        } 
+    }
+
+    useEffect(() => {
+        handleGetBoards();
+    }, [])
+
+
     const handleLogout = async () => {
-        const res = await authLogout(name);
-        console.log(res);
-        if (res.status === 200 && res.message !== "Already logged out") {
-            window.location.replace(`http://localhost:5000/logout/${name}`)
-        };
+        try {
+            const res = await authLogout(name);
+            console.log(res);
+            if (res.status === 200) {
+                window.location.replace(`http://localhost:5000/logout/${name}`)
+            };
+        } catch (err) {
+            console.log(err);
+            setErrText("Error: Cannot logout!");
+        }
     }
 
     return (
@@ -63,6 +77,8 @@ const Home = () => {
                     )}
                 </div>
             </div>
+            
+            <p style={{color: 'red', textAlign: 'center'}}>{errText}</p>
 
             {/* Task Boards Section */}
             <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: "20px" }}>
@@ -72,6 +88,7 @@ const Home = () => {
                         {taskBoards ? taskBoards.map((board) => (
                             <div>
                                 <Link to={`board/${board.pk}`}>{board.fields.name}</Link>
+                                <button className="task-button" onClick={() => handleDeleteBoard(board.pk)}>-</button>
                             </div>
                         )) : <p>No boards</p>}
                 </div>

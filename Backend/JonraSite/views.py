@@ -30,59 +30,49 @@ def error(request, msg="Something went wrong..."):
     return JsonResponse(res, status=404)
 
 def signup(request):
-    print(request)
+    if request.method != "POST":
+        return JsonResponse({"message": "Method not allowed"}, status=405)
+
     try:
-        type = request.method
-        if type == "GET":
-            return JsonResponse({ 'message': 'Success' }, status=200)
-        elif type == "POST":
-            print(request.body)
-            data = json.loads(request.body)
-            user = data.get("user")
-            passwd = data.get("password")
+        data = json.loads(request.body.decode('utf-8'))
+        username = data.get("user", "").strip()
+        password = data.get("password", "").strip()
 
-            if not user or not passwd:
-                return JsonResponse({
-                    'message': 'Missing one or more fields',
-                    'status': 'Failed'
-                }, status=400)
-            
-            userExist = User.objects.filter(username=user).count()
-            if userExist > 0:
-                return JsonResponse({
-                    'message': 'User already exists',
-                    'status': 'Failed'
-                }, status=400)
+        if not username or not password:
+            return JsonResponse({"message": "Missing one or more fields"}, status=400)
 
-            userObj = User.objects.create(username=user, password=passwd, loggedIn=True)
-            userObj.cookie = createCookie(user, passwd)
-            userObj.save()
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"message": "User already exists"}, status=400)
 
-            res = JsonResponse({
-                'message': 'User created',
-                'status': 'Success'
-            }, status=201)
-            res.set_cookie(
-                key="SessionCookie",
-                value=userObj.getCookie(),
-                max_age=28800,   # session is 8 hrs long until expiration
-                secure=True,
-                httponly=True
-            )
+        new_user = User(username=username, password=password, loggedIn=True)
+        new_user.cookie = createCookie(username, password)
+        new_user.save()
 
-            return res
+        res = JsonResponse({"message": "User created successfully"}, status=201)
+        res.set_cookie(
+                    key="SessionCookie",
+                    value=new_user.getCookie(),
+                    max_age=28800,   # session is 8 hrs long until expiration
+                    secure=True,
+                    httponly=True,
+                )
+
+        return res
+
     except Exception as e:
-        print(e)
-        return error(request)
+        return JsonResponse({"message": "Invalid request"}, status=400)
 
 def home(request, name):
     try:
         user = User.objects.get(username=name)
         boardset = Board.objects.filter(editors=user)
-        cookie = "" if settings.DEBUG else request.COOKIE["SessionCookie"]
-        if cookie != user.getCookie() and not settings.DEBUG:
+        cookie = "" if settings.DEBUG else request.COOKIES.get("SessionCookie")
+        if (cookie != user.getCookie() or not user.getIsLoggedIn()) and not settings.DEBUG:
+            print(cookie == user.getCookie())
+            print(request.COOKIES)
+            print(user.getIsLoggedIn())
             return JsonResponse({
-                'message': "Invalid cookie!",
+                'message': "Unauthorized",
                 'status': "Failed"
             }, status=401)
         if request.method == "GET":
@@ -112,44 +102,40 @@ def home(request, name):
         return error(request)
 
 def login(request):
+    if request.method != "POST":
+        return JsonResponse({"message": "Method not allowed"}, status=405)
+
     try:
-        type = request.method
-        if type == "GET":
-            return error(request)
-        elif type == "POST":
-            data = json.loads(request.body)
-            user = data.get("user")
-            passwd = data.get("password")
+        data = json.loads(request.body.decode('utf-8'))
+        username = data.get("user", "").strip()
+        password = data.get("password", "").strip()
 
-            if not user or not passwd:
-                return JsonResponse({
-                    'message': 'Missing one or more fields',
-                    'status': 'Failed'
-                }, status=400)
+        if not username or not password:
+            return JsonResponse({"message": "Missing credentials"}, status=400)
 
-            userObj = User.objects.get(username=user, password=passwd)
-            userObj.loggedIn = True
-            userObj.cookie = createCookie(user, passwd)
-            userObj.save()
+        try:
+            user = User.objects.get(username=username)
+            if user.password == password:
+                user.cookie = createCookie(username, password)
+                user.loggedIn = True
+                user.save()
+                res = JsonResponse({"message": "Login successful"}, status=200)
+                res.set_cookie(
+                    key="SessionCookie",
+                    value=user.getCookie(),
+                    max_age=28800,   # session is 8 hrs long until expiration
+                    secure=True,
+                    httponly=True,
+                )
+                return res
+            else:
+                return JsonResponse({"message": "Invalid password"}, status=401)
 
-            res = JsonResponse({
-                'message': 'User logged in',
-                'status': 'Success'
-            }, status=201)
-            res.set_cookie(
-                key="SessionCookie",
-                value=userObj.getCookie(),
-                max_age=28800,   # session is 8 hrs long until expiration
-                secure=True,
-                httponly=True
-            )
+        except User.DoesNotExist:
+            return JsonResponse({"message": "User does not exist"}, status=401)
 
-            return res
-    except:
-        return JsonResponse({
-            'message': 'User does not exist!',
-            'status': 'Failure'
-        }, status=400)
+    except Exception as e:
+        return JsonResponse({"message": "Invalid request"}, status=400)
 
 def board(request, name):
     try:
@@ -158,10 +144,10 @@ def board(request, name):
         editors = board.getEditors().all()
         user = User.objects.get(username=name)
 
-        cookie = "" if settings.DEBUG else request.COOKIE["SessionCookie"]
-        if cookie != user.getCookie() and not settings.DEBUG:
+        cookie = "" if settings.DEBUG else request.COOKIE.get("SessionCookie")
+        if (cookie != user.getCookie() or not user.getIsLoggedIn()) and not settings.DEBUG:
             return JsonResponse({
-                'message': "Invalid cookie!",
+                'message': "Unauthorized",
                 'status': "Failed"
             }, status=401)
         if user not in editors:
@@ -179,17 +165,31 @@ def board(request, name):
         print(e)
         return error(request, "Board does not exist.")
 
-def logout(request):
-    return HttpResponse("Logout page")
-
+def logout(request, name):  # <-- accept `name`
+    try:
+        user = User.objects.get(username=name)
+        cookie = "" if settings.DEBUG else request.COOKIES.get("SessionCookie")
+        if cookie != user.getCookie() and not settings.DEBUG:
+            return JsonResponse({
+                'message': "Invalid cookie!",
+                'status': "Failed"
+            }, status=401)
+        
+        user.cookie = ""
+        user.loggedIn = False
+        user.save()
+        return JsonResponse({"message": f"User {name} logged out successfully"}, status=200)
+    except Exception as e:
+        return JsonResponse({"message": "Invalid cookie"}, status=401)
+    
 def boardCreate(request, name, boardname):
     try:
         user = User.objects.get(username=name)
         
-        cookie = "" if settings.DEBUG else request.COOKIE["SessionCookie"]
-        if cookie != user.getCookie() and not settings.DEBUG:
+        cookie = "" if settings.DEBUG else request.COOKIES.get("SessionCookie")
+        if (cookie != user.getCookie() or not user.getIsLoggedIn()) and not settings.DEBUG:
             return JsonResponse({
-                'message': "Invalid cookie!",
+                'message': "Unauthorized",
                 'status': "Failed"
             }, status=401)
         if request.method == "POST":
@@ -204,17 +204,32 @@ def boardCreate(request, name, boardname):
             return JsonResponse(data)
     except Exception as e:
         print(e)
-        return error(request, "Board was not created.")    
+        return error(request, "Board was not created.")
+
+def boardDelete(request, name, id):
+    try:
+        if request.method == "DELETE":
+            user = User.objects.get(username=name)
+            board = user.getBoards().get(id=id)
+            board.delete()
+            return JsonResponse({
+                'message': "Board deleted successfully",
+                'status': 'Success'
+            }, status=201)
+    except Exception as e:
+        print(e)
+        return error(request, "An issue has occurred.")
+    
 
 def tasks(request, name, id):
     try:
         user = User.objects.get(username=name)
         board = user.getBoards().get(id=id)
 
-        cookie = "" if settings.DEBUG else request.COOKIE["SessionCookie"]
-        if cookie != user.getCookie() and not settings.DEBUG:
+        cookie = "" if settings.DEBUG else request.COOKIES.get("SessionCookie")
+        if (cookie != user.getCookie() or not user.getIsLoggedIn()) and not settings.DEBUG:
             return JsonResponse({
-                'message': "Invalid cookie!",
+                'message': "Unauthorized",
                 'status': "Failed"
             }, status=401)
         if request.method == "GET":
@@ -247,8 +262,8 @@ def tasks(request, name, id):
         elif request.method == "DELETE":
             print(request.body)
             data = json.loads(request.body)
-            taskname = data.get("taskname")
-            task = Task.objects.get(name=taskname)
+            taskId = data.get("taskId")
+            task = Task.objects.get(id=taskId)
             task.delete()
 
             return JsonResponse({

@@ -1,24 +1,39 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { authLogin, authSignup } from "../api/auth";
 import "./login-page-style.css";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [activeTab, setActiveTab] = useState("login");
+  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = () => {
-    console.log("Login Data:", formData);
-    // Add login logic here
+  const handleLogin = async () => {
+    try {
+      const res = await authLogin(formData);
+      setMessage("Login successful!");
+      localStorage.setItem("username", formData.username);
+      window.location.href = `/home/${formData.username}`;
+    } catch (err) {
+      console.error(err);
+      setMessage("Login failed. Please check your credentials.");
+    }
   };
 
-  const handleSignup = () => {
-    console.log("Signup Data:", formData);
-    // Add signup logic here
+  const handleSignup = async () => {
+    try {
+      const res = await authSignup(formData);
+      setMessage("Signup successful! You can now log in.");
+      setActiveTab("login");
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.message || "Signup failed.");
+    }
   };
 
   return (
@@ -97,11 +112,13 @@ export default function LoginPage() {
               required
               className="login-input"
             />
-            <button type="submit" className="login-button" onClick={handleLogin}>
+            <button type="submit" className="login-button">
               Sign Up
             </button>
           </form>
         )}
+
+        {message && <div className="login-message">{message}</div>}
       </div>
     </div>
   );

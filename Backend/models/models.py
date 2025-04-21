@@ -36,7 +36,7 @@ Board Model
 class Board(models.Model):
     id = models.AutoField(primary_key=True)
     editors = models.ManyToManyField(User, related_name='boards')
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
 
     def getId(self):
         return self.id
@@ -77,7 +77,7 @@ class Task(models.Model):
 
     id = models.AutoField(primary_key=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='tasks')
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     description = models.CharField(max_length=3000)
     priority = models.CharField(max_length=1, choices=priority_choices, default="M")
     status = models.CharField(max_length=2, choices = status_choices, default="NS")

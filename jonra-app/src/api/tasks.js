@@ -4,7 +4,7 @@ const getRootUrl = (username, boardId) => { return `http://127.0.0.1:8000/home/$
 
 
 export const getTasks = async (username, boardId) => {
-    const res = await axios.get(getRootUrl(username, boardId));
+    const res = await axios.get(getRootUrl(username, boardId), { withCredentials: true });
     if (res.status >= 400) return res;
     const tasks = JSON.parse(res.data.tasks);
     return tasks.reverse();
@@ -29,10 +29,10 @@ export const getTaskFromId = async (username, boardId, taskId) => {
     return taskObj;
 }
 
-export const removeTask = async (username, boardId, taskname) => {
+export const removeTask = async (username, boardId, taskId) => {
     const res = await axios.delete(getRootUrl(username, boardId), {
         data: {
-            taskname: taskname
+            taskId: taskId
         }});
     return res;
 }
@@ -43,7 +43,7 @@ export const createTask = async (username, boardId, taskName, description, prior
         description: description,
         priority: priority,
         taskStatus: taskStatus
-    });
+    }, { withCredentials: true });
     return res;
 }
 
@@ -54,7 +54,7 @@ export const editTask = async (username, boardId, taskId, taskName, taskDesc, ta
     const taskStatusParam = taskStatus? `&taskStatus=${taskStatus}` : "";
     const res = await axios.patch(
         getRootUrl(username, boardId) + `/edit?taskId=${taskId}` + taskNameParam + taskDescParam + taskPriorityParam + taskStatusParam,
-        { taskId: taskId }
+        { taskId: taskId }, { withCredentials: true }
     );
     return res; 
 }
