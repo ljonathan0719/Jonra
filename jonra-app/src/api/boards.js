@@ -1,4 +1,5 @@
 import axios from "axios";
+import root_url from './info';
 
 /*
  * Data format:
@@ -9,23 +10,27 @@ import axios from "axios";
     : 
     "jonathan"
  */
+
+// API to acquire all boards from user with given username
 export const getBoards = async (username) => {
     console.log(username);
-    const res = await axios.get(`http://127.0.0.1:8000/home/${username}`);
+    const res = await axios.get(root_url + `home/${username}`);
     return res;
 }
 
+// API to create a new board for the user with the provided name
 export const createBoards = async (username, boardname) => {
 
-    const res = await axios.post(`http://127.0.0.1:8000/home/${username}/createboard/${boardname}`, {
+    const res = await axios.post(root_url + `home/${username}/createboard/${boardname}`, {
         username: username,
         boardname: boardname
     });
     return res;
 }
 
+// API to remove a board with the given backend ID
 export const deleteBoards = async (username, boardId) => {
-    const res = await axios.delete(`http://127.0.0.1:8000/home/${username}/deleteboard/${boardId}`, {
+    const res = await axios.delete(root_url + `home/${username}/deleteboard/${boardId}`, {
         username: username,
         boardId: boardId
     });

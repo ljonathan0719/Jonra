@@ -4,6 +4,10 @@ import { authLogout } from "../api/auth";
 import { getBoards, createBoards, deleteBoards } from "../api/boards";
 import "./Home.css";
 
+/*
+ * Responsible for displaying the boards
+ * Able to go to the Board page and delete boards from given list
+ */
 const Home = () => {
     const { name } = useParams();
     const [taskBoards, setTaskBoards] = useState([]);
@@ -11,12 +15,14 @@ const Home = () => {
     const [errText, setErrText] = useState("");
     const navigate = useNavigate();
 
+    // Acquire the boards
     const handleGetBoards = async () => {
         const res = await getBoards(name);
         const boards = JSON.parse(res.data.boards);
         setTaskBoards(boards);
     }
 
+    // Verify the user based on locally stored data
     useEffect(() => {
         const storedUsername = localStorage.getItem("username");
         if (!storedUsername || storedUsername !== name) {
@@ -33,14 +39,16 @@ const Home = () => {
         fetchBoards();
     }, [name, navigate]);
 
+    // Create the board using a window prompt
     const handleCreateBoard = async () => {
         const boardname = prompt("What is this board's name?");
         if (boardname.length === 0) return;
         const res = await createBoards(name, boardname);
         const board = JSON.parse(res.data.board);
-        window.location.replace("http://localhost:5000/home/" + name + "/board/" + board[0].pk)
+        navigate(`board/${board[0].pk}`);
     }
 
+    // Delete the board with given ID and update the page
     const handleDeleteBoard = async (boardId) => {
         try {
             const res = await deleteBoards(name, boardId);
@@ -55,13 +63,14 @@ const Home = () => {
         handleGetBoards();
     }, []);
 
-
+    // Logout the user
     const handleLogout = async () => {
         await authLogout(name);
         localStorage.removeItem("username");
-        window.location.href = "/login";
+        navigate("/login");
     };
 
+    // Show settings option when user clicks the option on the user icon
     const handleSettingsClick = (e) => {
         e.preventDefault();
         alert("Settings feature is coming soon!\nYou'll stay on this page ;)");

@@ -4,8 +4,10 @@ import { editTask, getTaskFromId } from "../api/tasks";
 import "./task-style.css";
 import "./login-page-style.css"
 
-// props are: name, description, priority, status
-
+/*
+ * Shows information stored within each task
+ * Responsible for showing, editing, and formatting task information
+ */
 export const Task = props => {
     const { name } = useParams();
     const { boardId, taskId, taskName, description, priority, status, handleGetTasks } = props;
@@ -16,11 +18,13 @@ export const Task = props => {
     const [ edit, setEdit ] = useState(false);
     const [ attributes, setAttributes ] = useState([taskName, description, priority, status]);
 
+    // Getting task information
     const getTaskInfo = async () => {
         const res = await getTaskFromId(name, boardId, taskId);
         setAttributes([res.fields.name, res.fields.description, res.fields.priority, res.fields.status]);
     }
 
+    // Handle editing this task info
     const handleEdit = async () => {
         await editTask(name, boardId, taskId, editName, editDesc, editPriority, editStatus);
         setEdit(false);

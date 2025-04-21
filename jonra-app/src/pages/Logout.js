@@ -1,10 +1,13 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
+// Temporary page to logout the user
 const Logout = () => {
     const { name } = useParams();
+    const navigate = useNavigate();
 
     setTimeout(() => {
-        window.location.replace(`http://localhost:5000`);
+        // window.location.replace(`http://localhost:5000`);
+        navigate("/login");
     }, 1000);
 
     return (

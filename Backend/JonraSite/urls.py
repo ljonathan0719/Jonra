@@ -24,8 +24,11 @@ Routes to website:
 /login - takes user to login page
 /signup - if user has no account, user creates one here
 /home/<str:name> - user's home page (could include user id for simplicity)
-/home/<str:name>board/:id - page to examine one of the user's boards
-/logout - not necessarily a page but a route to logout the user from the session
+/home/<str:name>/board/<int:id> - page to examine one of the user's boards
+home/<str:name>/board/<int:id>/edit - route to edit tasks (Might not be used)
+home/<str:name>/createboard/<str:boardname> - route to create new board
+home/<str:name>/deleteboard/<int:id> - route to delete existing board
+/logout/<str:name> - not necessarily a page but a route to logout the user from the session
 '''
 urlpatterns = [
     path('admin/', admin.site.urls),

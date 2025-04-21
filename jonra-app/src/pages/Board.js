@@ -8,6 +8,11 @@ import "./login-page-style.css"
 import "./task-style.css";
 import "./form.css"
 
+/*
+ * Component to display list of task belonging to the user's board
+ * In charge of creating, deleting tasks and updating the page to see edits
+ */
+
 
 const Board = () => {
 
@@ -17,6 +22,7 @@ const Board = () => {
     const [errorMsg, setErrorMsg] = useState("");
     const [showProfileMenu, setShowProfileMenu] = useState(false);
 
+    // Acquire tasks from backend
     const handleGetTasks = async () => {
         try {
             const res = await getTasks(name, id);
@@ -28,6 +34,7 @@ const Board = () => {
         }
     }
 
+    // Add new task
     const handleAddTasks = async () => {
         try {
             console.log("taskname: ", taskParams[0])
@@ -40,6 +47,7 @@ const Board = () => {
         }
     }
 
+    // Remove the task
     const handleRemove = async (taskId) => {
         try {
             await removeTask(name, id, taskId)
@@ -51,12 +59,14 @@ const Board = () => {
         }
     }
 
+    // Logout the user
     const handleLogout = async () => {
         await authLogout(name);
         localStorage.removeItem("username");
         window.location.href = "/login";
     };
 
+    // Handling clicking on settings option on user icon (top right screen)
     const handleSettingsClick = (e) => {
         e.preventDefault();
         alert("Settings feature is coming soon!");
