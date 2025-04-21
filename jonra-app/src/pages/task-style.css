@@ -3,9 +3,8 @@ body {
 }
 
 .taskPgcontainer {
-  max-width: 1000px;
-  /* margin-left: auto; */
-  /* margin-right: auto; */
+  margin-left: auto;
+  width: 100%;
 }
 
 .taskContainer {
@@ -22,7 +21,6 @@ body {
 }
 
 .login-card {
-    /* width: 80%; */
     margin: 0;
     box-shadow: 4px 4px 10px gray;
     padding: 10px;
@@ -69,3 +67,100 @@ body {
 #save {
   background-color: green;
 }
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.profile-section {
+    position: relative;
+}
+
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.profile-icon:hover {
+    background-color: #f1f5f9;
+}
+
+.profile-dropdown {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    padding: 0.75rem 0;
+    z-index: 20;
+}
+
+.centered-form-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    max-width: 1000px;
+}
+
+.login-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+#edit-button {
+  width: 50%;
+  margin-right: 1%;
+  display: inline;
+}
+
+#remove-button {
+  width: 50%;
+  margin-left: 1%;
+  display: inline-block;
+}
+
+.taskButtonContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+#logout-button {
+  border: none;
+  background-color: transparent;
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #475569;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  width: 100%;
+  text-align: left;
+}
+
+#logout-button:hover {
+  background-color: #f1f5f9;
+  color: #4a6fa5;
+  cursor: pointer;
+}
+

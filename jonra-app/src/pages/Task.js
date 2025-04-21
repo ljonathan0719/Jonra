@@ -22,7 +22,7 @@ export const Task = props => {
     }
 
     const handleEdit = async () => {
-        const res = await editTask(name, boardId, taskId, editName, editDesc, editPriority, editStatus);
+        await editTask(name, boardId, taskId, editName, editDesc, editPriority, editStatus);
         setEdit(false);
         getTaskInfo();
     }
@@ -40,8 +40,11 @@ export const Task = props => {
                     <p>Description: {description}</p>
                     <p>Priority: {priority}</p>
                     <p>Status: {status}</p>
-                    <button id="edit" className="login-button" onClick={() => setEdit(true)}>Edit</button>
-                    {props.children}
+                    
+                    <div className="taskButtonContainer">
+                        <button id="edit-button" className="login-button" onClick={() => setEdit(true)}>Edit</button>
+                        {props.children}
+                    </div>
                 </div>
             }
             {edit && 

@@ -4,15 +4,13 @@ const PageNotFound = () => {
     const { name } = useParams();
 
     return (
-        <div>
-            <p><strong>404 Not Found</strong><br /> The page you requested cannot be found.</p>
-            {name && 
-                <div>
-                    <Link to={`/home/${name}`}>Return to home</Link>
-                    <br />
-                </div>
+        <div className="not-found-container">
+            <h1>404 Not Found</h1>
+            <p>The page you requested cannot be found.</p>
+            {name &&
+                <Link to={`/home/${name}`} className="btn btn-secondary">Return to home</Link>
             }
-            <Link to="/">Return to login</Link>
+            <Link to="/" className="btn btn-primary">Return to login</Link>
         </div>
     );
 }

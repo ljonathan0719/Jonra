@@ -16,8 +16,6 @@ div {
     margin-left: 10px;
     margin-right: 10%;
     text-align: center;
-    /* display: flex; */
-    /* flex-direction: column; */
 }
 
 .login-card {
@@ -54,3 +52,4 @@ div {
     width: 30%;
     margin: auto;
 }
+

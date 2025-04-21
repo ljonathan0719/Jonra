@@ -15,8 +15,6 @@ from models.models import *
 # NOTE: Django's CSRF cookie security has been disabled for development.
 # Please look at: https://www.geeksforgeeks.org/csrf-token-in-django/
 
-# TO-DO: Add auto testing script for req-res 
-
 def createCookie(username, password):
      hashedPass = make_password(password)
      hasedUser = make_password(username)
@@ -77,25 +75,19 @@ def home(request, name):
             }, status=401)
         if request.method == "GET":
             boards = [model_to_dict(board) for board in boardset]
-            # boards = [(board.getId(), board.getName()) for board in boardset]
             boards = serialize('json', boardset)
             data = {
                 "username": user.getUsername(),
                 "boards": boards
             }
-            # print(list(deserialize("json", boards)))
             return JsonResponse(data)
         elif request.method == "POST":
             boards = [model_to_dict(board) for board in boardset]
-
-            # boards = [(board.getId(), board.getName()) for board in boardset]
-            # boards = serialize('json', boardset)
             data = {
                 "username": user.getUsername(),
                 "boards": serialize('json', boards),
                 "tasks": boards[0].getTasks()
             }
-            # print(list(deserialize("json", boards)))
             return JsonResponse(data)
     except Exception as e:
         print(e)
@@ -220,7 +212,6 @@ def boardDelete(request, name, id):
         print(e)
         return error(request, "An issue has occurred.")
     
-
 def tasks(request, name, id):
     try:
         user = User.objects.get(username=name)
@@ -260,7 +251,6 @@ def tasks(request, name, id):
                 'status': 'Success'
             }, status=201)
         elif request.method == "DELETE":
-            print(request.body)
             data = json.loads(request.body)
             taskId = data.get("taskId")
             task = Task.objects.get(id=taskId)
@@ -276,7 +266,6 @@ def tasks(request, name, id):
             taskDesc = request.GET.get("taskDesc") if 'taskDesc' in request.GET else ""
             taskPriority = request.GET.get("taskPriority") if 'taskPriority' in request.GET else ""
             taskStatus = request.GET.get("taskStatus") if 'taskStatus' in request.GET else ""
-            print(taskName)
             
             task = Task.objects.get(id=taskId)
             if taskName: task.name = taskName

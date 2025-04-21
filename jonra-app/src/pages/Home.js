@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { authLogout } from "../api/auth";
 import { getBoards, createBoards, deleteBoards } from "../api/boards";
-import "./form.css"
+import "./Home.css";
 
 const Home = () => {
     const { name } = useParams();
     const [taskBoards, setTaskBoards] = useState([]);
-    const [showMenu, setShowMenu] = useState(false);
-    const [errText, setErrText] = useState("")
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const [errText, setErrText] = useState("");
+    const navigate = useNavigate();
 
     const handleGetBoards = async () => {
         const res = await getBoards(name);
@@ -17,9 +17,21 @@ const Home = () => {
         setTaskBoards(boards);
     }
 
-    // useEffect(() => {
-    //     handleGetBoards(name);
-    // }, [name]);
+    useEffect(() => {
+        const storedUsername = localStorage.getItem("username");
+        if (!storedUsername || storedUsername !== name) {
+            navigate("/login");
+            return;
+        }
+
+        const fetchBoards = async () => {
+            const res = await getBoards(name);
+            const boards = JSON.parse(res.data.boards);
+            setTaskBoards(boards);
+        };
+
+        fetchBoards();
+    }, [name, navigate]);
 
     const handleCreateBoard = async () => {
         const boardname = prompt("What is this board's name?");
@@ -41,72 +53,102 @@ const Home = () => {
 
     useEffect(() => {
         handleGetBoards();
-    }, [])
+    }, []);
 
 
     const handleLogout = async () => {
-        try {
-            const res = await authLogout(name);
-            console.log(res);
-            if (res.status === 200) {
-                window.location.replace(`http://localhost:5000/logout/${name}`)
-            };
-        } catch (err) {
-            console.log(err);
-            setErrText("Error: Cannot logout!");
-        }
-    }
+        await authLogout(name);
+        localStorage.removeItem("username");
+        window.location.href = "/login";
+    };
+
+    const handleSettingsClick = (e) => {
+        e.preventDefault();
+        alert("Settings feature is coming soon!\nYou'll stay on this page ;)");
+        setShowProfileMenu(false);
+    };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", height: "100vh", padding: "20px" }}>
-            {/* Top Bar */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h1>Welcome to Jonra</h1>
-                <div style={{ position: "relative" }}>
-                    {/* <img
-                        src="/path-to-profile-pic.jpg"
-                        alt="Profile"
-                        style={{ width: 40, height: 40, borderRadius: "50%", cursor: "pointer" }}
-                        onClick={() => setShowMenu(!showMenu)}
-                    /> */}
-                    {showMenu && (
-                        <div style={{ position: "absolute", right: 0, background: "white", border: "1px solid #ddd", borderRadius: 5, padding: 10 }}>
-                            <p style={{ margin: "5px 0", cursor: "pointer" }}>Info</p>
-                            <p style={{ margin: "5px 0", cursor: "pointer" }}>Settings</p>
+        <div className="home-container">
+            <header className="app-header">
+                <h1 className="app-title">Welcome to Jonra!</h1>
+                <div className="profile-section">
+                    <div
+                        className="profile-icon"
+                        onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="32"
+                            height="32"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    {showProfileMenu && (
+                        <div className="profile-dropdown">
+                            <div className="profile-info">
+                                <span className="username">{name}</span>
+                            </div>
+                            <a
+                                href={`/home/${name}`}
+                                className="dropdown-item"
+                                onClick={handleSettingsClick}
+                            >
+                                Settings
+                            </a>
+                            <button id="logout-button" onClick={handleLogout} className="dropdown-item">
+                                Logout
+                            </button>
                         </div>
                     )}
                 </div>
-            </div>
-            
-            <p style={{color: 'red', textAlign: 'center'}}>{errText}</p>
+            </header>
 
-            {/* Task Boards Section */}
-            <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: "20px" }}>
-                {/* Existing Task Boards */}
-                <div style={{ width: "40%", border: "1px solid #ddd", padding: "20px", borderRadius: "10px" }}>
-                    <h2>Existing Task Boards</h2>
-                        {taskBoards ? taskBoards.map((board) => (
-                            <div>
-                                <Link to={`board/${board.pk}`}>{board.fields.name}</Link>
-                                <button className="task-button" onClick={() => handleDeleteBoard(board.pk)}>-</button>
-                            </div>
-                        )) : <p>No boards</p>}
+            <main className="boards-section">
+                <div className="boards-header">
+                    <h2>Your Boards</h2>
+                    <button
+                        onClick={handleCreateBoard}
+                        className="create-board-btn"
+                    >
+                        + New Board
+                    </button>
                 </div>
 
-                {/* Create Task Board Section */}
-                <div style={{ width: "40%", border: "1px solid #ddd", padding: "20px", borderRadius: "10px", textAlign: "center" }}>
-                    <h2>Create a New Task Board</h2>
-                    <form>
-                        <p>Enter board name: <input type="text" name=""></input></p>
-                        <button onClick={handleCreateBoard}>Create Board</button>
-                    </form>
+                <div className="boards-grid">
+                    {taskBoards?.length > 0 ? (
+                        taskBoards.map((board) => (
+                        <div className="board-card">
+                            <Link
+                                key={board.pk}
+                                to={`/home/${name}/board/${board.pk}`}
+                                className="board-card-link"
+                            >
+                                <div>
+                                    <h3>{board.fields.name}</h3>
+                                    <p>View tasks →</p>
+                                </div>
+                            </Link>
+                            <button className="delete-button" onClick={() => handleDeleteBoard(board.pk)}>Delete</button>
+                        </div>
+                        ))
+                    ) : (
+                        <div className="empty-state">
+                            <p>No boards yet. Create your first board!</p>
+                        </div>
+                    )}
                 </div>
-            </div>
-            <div>
-                <button onClick={handleLogout}>Logout</button>
-            </div>
+            </main>
         </div>
-    )
+    );
 };
 
 export default Home;
