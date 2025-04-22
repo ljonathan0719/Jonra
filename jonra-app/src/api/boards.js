@@ -13,9 +13,20 @@ import root_url from './info';
 
 // API to acquire all boards from user with given username
 export const getBoards = async (username) => {
-    console.log(username);
     const res = await axios.get(root_url + `home/${username}`);
     return res;
+}
+
+export const getBoard = async (username, boardId) => {
+    const res = await getBoards(username);
+    const boards = JSON.parse(res.data.boards);
+    try {
+        const id = parseInt(boardId);
+        const validBoard = boards.filter(board => id === board.pk);
+        return validBoard;
+    } catch (err) {
+        return [];
+    }
 }
 
 // API to create a new board for the user with the provided name

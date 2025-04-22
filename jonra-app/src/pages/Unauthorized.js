@@ -1,6 +1,6 @@
 import {Outlet, Link} from "react-router-dom";
 
-export default Unauthorized = () => {
+export const Unauthorized = () => {
     return (
         <div>
             <p><strong>Unauthorized action</strong>: You do not have permission to access this resource!</p>

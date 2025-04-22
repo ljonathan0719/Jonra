@@ -1,9 +1,10 @@
 import { useParams } from "react-router-dom";
 import { getTasks, removeTask, createTask, editTask } from "../api/tasks"
+import { getBoard } from "../api/boards.js";
 import { useEffect, useState } from "react";
-import { authLogout } from "../api/auth";
+import { authLogout, verifyUser } from "../api/auth";
 import { Task } from "./Task.js";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./login-page-style.css"
 import "./task-style.css";
 import "./form.css"
@@ -21,10 +22,25 @@ const Board = () => {
     const [taskParams, setTaskParams] = useState(["Task", "None", "M", "NS"]);
     const [errorMsg, setErrorMsg] = useState("");
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const navigate = useNavigate();
+
+    const checkUser = () => {
+        const validUser = verifyUser(name);
+        if (!validUser) navigate("/authError");
+    }
+
+    const validateBoard = async () => {
+        const obj = await getBoard(name, id);
+        if (!obj.length) {
+            setErrorMsg("Error: Board does not exit!");
+            navigate(`/home/${name}/pagenotfound`);
+        }
+    }
 
     // Acquire tasks from backend
     const handleGetTasks = async () => {
         try {
+            await validateBoard();
             const res = await getTasks(name, id);
             setTasks(res)
             setErrorMsg("");
@@ -37,8 +53,8 @@ const Board = () => {
     // Add new task
     const handleAddTasks = async () => {
         try {
-            console.log("taskname: ", taskParams[0])
             const res = await createTask(name, id, ...taskParams);
+
             handleGetTasks();
             setErrorMsg("");
         } catch (err) {
@@ -74,6 +90,8 @@ const Board = () => {
     };
 
     useEffect(() => {
+        checkUser();
+        validateBoard();
         handleGetTasks();
     }, [])
 
@@ -129,7 +147,7 @@ const Board = () => {
                 </div>
             </header>
             <div className="centered-form-container">
-                <div className="login-card">
+                <form className="login-card">
                     <h2>Create new Task:</h2>
                     <p><label>Name: <input className="login-input" id="taskName" type="text" placeholder="Enter a name..." maxLength={250} required onChange={() => {
                         const inputVal = document.getElementById("taskName").value;
@@ -151,7 +169,7 @@ const Board = () => {
                     {errorMsg &&
                         <p style={{color: 'red'}}>{errorMsg}</p>
                     }
-                </div>
+                </form>
             </div>
             <div>
                 {tasks.length? tasks.map((task) => (

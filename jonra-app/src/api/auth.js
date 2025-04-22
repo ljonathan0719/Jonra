@@ -24,3 +24,12 @@ export const authSignup = async (user) => {
     });
     return res;
 }
+
+// Checks whether locally stored user is same as given one
+export const verifyUser = (username) => {
+    const storedUsername = localStorage.getItem("username");
+    if (!storedUsername || storedUsername !== username) {
+        return false;
+    }
+    return true;
+}

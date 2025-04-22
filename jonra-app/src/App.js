@@ -6,6 +6,7 @@ import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import ErrorPage from "./pages/Error"
 import PageNotFound from "./pages/PageNotFound"
+import { Unauthorized } from "./pages/Unauthorized"
 import Logout from "./pages/Logout"
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
             <Route path="*" element={<PageNotFound />} />
           </Route>
           <Route path="logout/:name" element={<Logout />} />
+          <Route path="authError" element={<Unauthorized />}/>
           <Route path="*" element={<PageNotFound />} />
         </Route>
       </Routes>
