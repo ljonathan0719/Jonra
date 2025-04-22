@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { authLogout } from "../api/auth";
 import { getBoards, createBoards, deleteBoards } from "../api/boards";
+import { verifyUser } from "../api/auth";
 import "./Home.css";
 
 /*
@@ -15,28 +16,27 @@ const Home = () => {
     const [errText, setErrText] = useState("");
     const navigate = useNavigate();
 
+    // Verifies if user matches one stored locally
+    const checkUser = () => {
+        const validUser = verifyUser(name);
+        if (!validUser) navigate("/authError");
+    }
+
     // Acquire the boards
     const handleGetBoards = async () => {
-        const res = await getBoards(name);
-        const boards = JSON.parse(res.data.boards);
-        setTaskBoards(boards);
+        try {
+            const res = await getBoards(name);
+            const boards = JSON.parse(res.data.boards);
+            setTaskBoards(boards);
+        } catch (err) {
+
+        }
     }
 
     // Verify the user based on locally stored data
     useEffect(() => {
-        const storedUsername = localStorage.getItem("username");
-        if (!storedUsername || storedUsername !== name) {
-            navigate("/login");
-            return;
-        }
-
-        const fetchBoards = async () => {
-            const res = await getBoards(name);
-            const boards = JSON.parse(res.data.boards);
-            setTaskBoards(boards);
-        };
-
-        fetchBoards();
+        checkUser();
+        handleGetBoards();
     }, [name, navigate]);
 
     // Create the board using a window prompt
@@ -60,6 +60,7 @@ const Home = () => {
     }
 
     useEffect(() => {
+        checkUser();
         handleGetBoards();
     }, []);
 
