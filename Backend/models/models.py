@@ -4,6 +4,8 @@ from django.db import models
 '''
 User Model
     - Must have password and unique username defined on signup
+    - Stores whether user is currently logged in
+    - Cookies (Functionality later): session authentication
 '''
 class User(models.Model):
     username = models.CharField(primary_key=True, max_length=255)

@@ -1,0 +1,213 @@
+.home-container {
+    min-height: 100vh;
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.app-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #4a6fa5;
+    margin: 0;
+    font-size: 1.75rem;
+    letter-spacing: 0.5px;
+}
+
+.profile-section {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.profile-icon:hover {
+    background-color: #f1f5f9;
+}
+
+.profile-dropdown {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    padding: 0.75rem 0;
+    z-index: 20;
+}
+
+.profile-info {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.username {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #475569;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f5f9;
+    color: #4a6fa5;
+}
+
+.boards-section {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.boards-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.boards-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.create-board-btn {
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.create-board-btn:hover {
+    background-color: #3a5a8a;
+}
+
+.boards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    row-gap: 2.5rem;
+    column-gap: 2.5rem;
+}
+
+.board-card {
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 80%;
+    width: 80%;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.board-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.board-card-link > .board-card {
+    height: 100%;
+}
+
+.board-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.board-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    color: #4a6fa5;
+}
+
+.board-card p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    color: #64748b;
+}
+
+.delete-button {
+    position: relative;
+    margin: auto;
+    background-color: rgb(231, 83, 83);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    opacity: 0.8;
+    transition: opacity 0.3;
+}
+
+.delete-button:active {
+    opacity: 0.6;
+    transition: opacity 0.3;
+}
+
+#logout-button {
+    border: none;
+    background-color: transparent;
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #475569;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    width: 100%;
+    text-align: left;
+}
+
+#logout-button:hover {
+    background-color: #f1f5f9;
+    color: #4a6fa5;
+    cursor: pointer;
+}

@@ -1,67 +1,164 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import Board from "./Board";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { authLogout } from "../api/auth";
+import { getBoards, createBoards, deleteBoards } from "../api/boards";
+import { verifyUser } from "../api/auth";
+import "./Home.css";
 
-const { 
-    getBoards, 
-    createBoards,
-    editBoard,
-    deleteBoards  } = require("../api/boards");
-
+/*
+ * Responsible for displaying the boards
+ * Able to go to the Board page and delete boards from given list
+ */
 const Home = () => {
     const { name } = useParams();
     const [taskBoards, setTaskBoards] = useState([]);
-    const [showMenu, setShowMenu] = useState(false);
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const [errText, setErrText] = useState("");
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const handleGetBoards = async (username) => {
-            const res = await getBoards(username);
+    // Verifies if user matches one stored locally
+    const checkUser = () => {
+        const validUser = verifyUser(name);
+        if (!validUser) navigate("/authError");
+    }
+
+    // Acquire the boards
+    const handleGetBoards = async () => {
+        try {
+            const res = await getBoards(name);
             const boards = JSON.parse(res.data.boards);
             setTaskBoards(boards);
-        }
+        } catch (err) {
 
-        handleGetBoards(name);
-    }, [name]);
+        }
+    }
+
+    // Verify the user based on locally stored data
+    useEffect(() => {
+        checkUser();
+        handleGetBoards();
+    }, [name, navigate]);
+
+    // Create the board using a window prompt
+    const handleCreateBoard = async () => {
+        const boardname = prompt("What is this board's name?");
+        if (boardname.length === 0) return;
+        const res = await createBoards(name, boardname);
+        const board = JSON.parse(res.data.board);
+        navigate(`board/${board[0].pk}`);
+    }
+
+    // Delete the board with given ID and update the page
+    const handleDeleteBoard = async (boardId) => {
+        try {
+            const res = await deleteBoards(name, boardId);
+            handleGetBoards();
+        } catch (err) {
+            console.log(err);
+            setErrText("Error: Could not delete board!");
+        } 
+    }
+
+    useEffect(() => {
+        checkUser();
+        handleGetBoards();
+    }, []);
+
+    // Logout the user
+    const handleLogout = async () => {
+        await authLogout(name);
+        localStorage.removeItem("username");
+        navigate("/login");
+    };
+
+    // Show settings option when user clicks the option on the user icon
+    const handleSettingsClick = (e) => {
+        e.preventDefault();
+        alert("Settings feature is coming soon!\nYou'll stay on this page ;)");
+        setShowProfileMenu(false);
+    };
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", height: "100vh", padding: "20px" }}>
-            {/* Top Bar */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h1>Welcome to Jonra</h1>
-                <div style={{ position: "relative" }}>
-                    <img
-                        src="/path-to-profile-pic.jpg"
-                        alt="Profile"
-                        style={{ width: 40, height: 40, borderRadius: "50%", cursor: "pointer" }}
-                        onClick={() => setShowMenu(!showMenu)}
-                    />
-                    {showMenu && (
-                        <div style={{ position: "absolute", right: 0, background: "white", border: "1px solid #ddd", borderRadius: 5, padding: 10 }}>
-                            <p style={{ margin: "5px 0", cursor: "pointer" }}>Info</p>
-                            <p style={{ margin: "5px 0", cursor: "pointer" }}>Settings</p>
+        <div className="home-container">
+            <header className="app-header">
+                <h1 className="app-title">Welcome to Jonra!</h1>
+                <div className="profile-section">
+                    <div
+                        className="profile-icon"
+                        onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="32"
+                            height="32"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    {showProfileMenu && (
+                        <div className="profile-dropdown">
+                            <div className="profile-info">
+                                <span className="username">{name}</span>
+                            </div>
+                            <a
+                                href={`/home/${name}`}
+                                className="dropdown-item"
+                                onClick={handleSettingsClick}
+                            >
+                                Settings
+                            </a>
+                            <button id="logout-button" onClick={handleLogout} className="dropdown-item">
+                                Logout
+                            </button>
                         </div>
                     )}
                 </div>
-            </div>
+            </header>
 
-            {/* Task Boards Section */}
-            <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: "20px" }}>
-                {/* Existing Task Boards */}
-                <div style={{ width: "40%", border: "1px solid #ddd", padding: "20px", borderRadius: "10px" }}>
-                    <h2>Existing Task Boards</h2>
-                        {taskBoards ? taskBoards.map((board) => (
-                            <p>{board.fields.name}</p>
-                        )) : <p>No boards</p>}
+            <main className="boards-section">
+                <div className="boards-header">
+                    <h2>Your Boards</h2>
+                    <button
+                        onClick={handleCreateBoard}
+                        className="create-board-btn"
+                    >
+                        + New Board
+                    </button>
                 </div>
 
-                {/* Create Task Board Section */}
-                <div style={{ width: "40%", border: "1px solid #ddd", padding: "20px", borderRadius: "10px", textAlign: "center" }}>
-                    <h2>Create a New Task Board</h2>
-                    <button onClick={() => alert("Create Board Clicked")}>Create Board</button>
+                <div className="boards-grid">
+                    {taskBoards?.length > 0 ? (
+                        taskBoards.map((board) => (
+                        <div className="board-card">
+                            <Link
+                                key={board.pk}
+                                to={`/home/${name}/board/${board.pk}`}
+                                className="board-card-link"
+                            >
+                                <div>
+                                    <h3>{board.fields.name}</h3>
+                                    <p>View tasks →</p>
+                                </div>
+                            </Link>
+                            <button className="delete-button" onClick={() => handleDeleteBoard(board.pk)}>Delete</button>
+                        </div>
+                        ))
+                    ) : (
+                        <div className="empty-state">
+                            <p>No boards yet. Create your first board!</p>
+                        </div>
+                    )}
                 </div>
-            </div>
+            </main>
         </div>
-    )
+    );
 };
 
 export default Home;

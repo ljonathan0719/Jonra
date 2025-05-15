@@ -1,0 +1,55 @@
+.tasksContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+div {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.taskFormContainer {
+    width: 350px;
+    padding: 10px;
+    max-height: 275px;
+    height: auto;
+    margin-left: 10px;
+    margin-right: 10%;
+    text-align: center;
+}
+
+.login-card {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.login-button {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.task-button {
+    background-color: rgb(231, 83, 83);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+  }
+
+  .task-button:hover {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+.taskFormContainer p {
+    width: 100%;
+    height: auto;
+}
+
+.taskButton {
+    width: 30%;
+    margin: auto;
+}
+
